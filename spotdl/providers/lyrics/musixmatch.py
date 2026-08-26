@@ -132,7 +132,6 @@ class MusixMatch(LyricsProvider):
         query = quote(f"{name} - {artists_str}", safe="")
 
         search_url = f"https://www.musixmatch.com/search?query={query}"
-
         search_resp = requests.get(
             search_url,
             impersonate="chrome110",
