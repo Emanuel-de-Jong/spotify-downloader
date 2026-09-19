@@ -15,12 +15,18 @@ from spotdl.providers.lyrics.base import LyricsProvider
 from spotdl.utils.config import GlobalConfig
 
 __all__ = ["MusixMatch"]
+logger = logging.getLogger(__name__)
+import asyncio
 
 
 class MusixMatch(LyricsProvider):
     """
     MusixMatch lyrics provider class.
     """
+    
+    ## email : Email address used to authenticate using Musixmatch
+    ##password: Password used to authenticate using Musixmatch
+    ## cookies : Cookies obtained from the authenticated browser session.
 
     def __init__(self):
         """
@@ -41,13 +47,16 @@ class MusixMatch(LyricsProvider):
 
         self.cookies = loop.run_until_complete(self.login_and_get_cookies())
 
-        print(self.cookies)
-
     async def login_and_get_cookies(self) -> dict[str, str]:
         """
+        logs into musixmatch and returns  the autheticated cookies
+
+        Returns :
+            A dictionary containing the authenticated session cookies
         """
-        
         async with async_playwright() as p:
+
+
             # Going to musixmatch to log in and get cookies for later use
 
             browser = await p.chromium.launch(headless=True)
@@ -140,7 +149,7 @@ class MusixMatch(LyricsProvider):
             proxies=GlobalConfig.get_parameter("proxies"),
         )
 
-        print(search_resp.status_code)
+        logger.debug(f"Musixmatch search response status code: {search_resp.status_code}")
 
         if not search_resp.ok:
             raise RuntimeError(
